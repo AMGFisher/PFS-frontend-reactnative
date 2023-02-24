@@ -1,5 +1,7 @@
 import { Text, FlatList, View, Image, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+
 
 function ExploreScreen() {
   const [posts, setPosts] = useState([]);
@@ -28,6 +30,7 @@ function ExploreScreen() {
               <Text>{itemData.item.caption}</Text>
               <Text>{itemData.item.likes} Likes</Text>
               <Text>{itemData.item.dislikes} Dislikes</Text>
+
 
             </View>
           );

@@ -8,6 +8,7 @@ import ExploreScreen from "./screens/ExploreScreen";
 import FeedScreen from "./screens/FeedScreen";
 import PersonalProfileScreen from "./screens/PersonalProfileScreen";
 import LoginScreen from "./screens/LoginScreen";
+import { useState, useEffect } from "react";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -15,6 +16,18 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  // useEffect(() => {
+  //   fetch("http://localhost:3000/me").then((r) => {
+  //     if (r.ok) {
+  //       r.json().then((user) => setUser(user));
+  //     }
+  //   });
+  // }, [user]);
+
+  console.log(user);
+
   return (
     <>
       <StatusBar style="auto" />
@@ -55,21 +68,36 @@ export default function App() {
           <Tab.Screen
             name="Profile"
             component={PersonalProfileScreen}
+            initialParams={{ setUser: { setUser } }}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="person-circle" color={color} size={size} />
               ),
             }}
           />
-          <Tab.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="log-in" color={color} size={size} />
-              ),
-            }}
-          />
+          {user ? (
+            <Tab.Screen
+              name={`${user.first_name} ${user.last_name}`}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="log-in" color={color} size={size} />
+                ),
+              }}
+            >
+              {() => <LoginScreen setUser={setUser} />}
+            </Tab.Screen>
+          ) : (
+            <Tab.Screen
+              name={"Login"}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="log-in" color={color} size={size} />
+                ),
+              }}
+            >
+              {() => <LoginScreen setUser={setUser} />}
+            </Tab.Screen>
+          )}
         </Tab.Navigator>
       </NavigationContainer>
     </>
