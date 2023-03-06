@@ -1,7 +1,14 @@
-import { Text } from "react-native";
+import { View, Text, Button } from "react-native";
+import ImagePickerExample from "../components/ImagePickerExample";
 
 function CreatePostScreen() {
-  return <Text>Create Post Screen</Text>;
+
+
+  return (
+    <>
+      <ImagePickerExample />
+    </>
+  );
 }
 
 export default CreatePostScreen;

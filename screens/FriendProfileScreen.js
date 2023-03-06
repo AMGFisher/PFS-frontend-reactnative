@@ -1,7 +1,7 @@
 import {
+  View,
   Text,
   FlatList,
-  View,
   Image,
   StyleSheet,
   Pressable,
@@ -9,20 +9,25 @@ import {
 import { useEffect, useState } from "react";
 const url = "http://78bf-149-34-242-95.ngrok.io";
 
+function FriendProfileScreen({ route, navigation }) {
+  navigation.setOptions({
+    title: `@${route.params.user.handle}`,
+  });
 
-function PersonalProfileScreen({ user }) {
-  const [posts, setPosts] = useState([]);
+  console.log(route.params.user);
+
+  const [user, setUser] = useState([]);
 
   useEffect(() => {
-    fetch(`${url}/personal`)
+    fetch(`${url}/users/${route.params.user.id}`)
       .then((r) => r.json())
-      .then(setPosts);
+      .then(setUser);
   }, []);
+
+  console.log(user.posts);
 
   return (
     <View>
-      <Text>Personal Profile Screen</Text>
-
       <View style={styles.user}>
         <Image source={{ uri: user.avatar }} style={styles.avatar} />
         <View style={{ flexDirection: "column" }}>
@@ -32,27 +37,36 @@ function PersonalProfileScreen({ user }) {
           </Text>
         </View>
       </View>
-
+      <View style={{alignItems: 'center'}}>
       <FlatList
         keyExtractor={(item) => item.id}
-        data={posts}
+        data={user.posts}
         numColumns={3}
         renderItem={(itemData) => {
           return (
-            <View>
-              <Image
-                source={{ uri: itemData.item.image }}
-                style={styles.image}
-              />
+            <View style={{margin: 1}}>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("PostDetail", {
+                    post: itemData.item,
+                  })
+                }
+              >
+                <Image
+                  source={{ uri: itemData.item.image }}
+                  style={styles.image}
+                />
+              </Pressable>
             </View>
           );
         }}
       />
+      </View>
     </View>
   );
 }
 
-export default PersonalProfileScreen;
+export default FriendProfileScreen;
 
 const styles = StyleSheet.create({
   image: {

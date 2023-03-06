@@ -1,37 +1,92 @@
-import { Text, FlatList, View, Image, StyleSheet } from "react-native";
+import {
+  Text,
+  FlatList,
+  View,
+  Image,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+const url = "http://78bf-149-34-242-95.ngrok.io";
 
-
-function ExploreScreen() {
+function ExploreScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/posts")
+    fetch(`${url}/posts`)
       .then((r) => r.json())
       .then(setPosts);
   }, []);
 
-  console.log(posts);
+  function handleLike() {
+    console.log("Like!");
+  }
+  function handleDislike() {
+    console.log("Dislike!");
+  }
 
   return (
     <View>
-      <Text>Explore Screen</Text>
+      <Text>Explore All Screen</Text>
       <FlatList
+        keyExtractor={(item) => item.id}
         data={posts}
         renderItem={(itemData) => {
           return (
             <View style={styles.card}>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("FriendProfile", {
+                    user: itemData.item.user,
+                  })
+                }
+              >
                 <View style={styles.user}>
-                <Image source={{uri: itemData.item.user.avatar}} style={styles.avatar} />
-                <Text style={{fontWeight: 'bold'}}>@{itemData.item.user.handle}</Text>
+                  <Image
+                    source={{ uri: itemData.item.user.avatar }}
+                    style={styles.avatar}
+                  />
+                  <View style={{flexDirection: "column"}}>
+                  <Text style={{ fontWeight: "bold" }}>
+                    @{itemData.item.user.handle}
+                  </Text>
+                  <Text>
+                    {itemData.item.user.first_name}{" "}
+                    {itemData.item.user.last_name}
+                  </Text>
+                  </View>
                 </View>
-              <Image source={{uri: itemData.item.image}} style={styles.image} />
-              <Text>{itemData.item.caption}</Text>
-              <Text>{itemData.item.likes} Likes</Text>
-              <Text>{itemData.item.dislikes} Dislikes</Text>
+              </Pressable>
 
+              <Pressable onPress={() => navigation.navigate("PostDetail")}>
+                <Image
+                  source={{ uri: itemData.item.image }}
+                  style={styles.image}
+                />
+                <Text style={{ fontStyle: "italic" }}>
+                  {itemData.item.caption}
+                </Text>
+                <Text>{itemData.item.comments.length} comments</Text>
+              </Pressable>
 
+              <View
+                style={{ flexDirection: "row", justifyContent: "space-evenly" }}
+              >
+                <View style={styles.like}>
+                  <Pressable onPress={handleLike}>
+                    <Ionicons name="thumbs-up-outline" />
+                    <Text>{itemData.item.likes} Likes</Text>
+                  </Pressable>
+                </View>
+
+                <View style={styles.dislike}>
+                  <Pressable onPress={handleDislike}>
+                    <Ionicons name="thumbs-down-outline" />
+                    <Text>{itemData.item.dislikes} Dislikes</Text>
+                  </Pressable>
+                </View>
+              </View>
             </View>
           );
         }}
@@ -43,26 +98,38 @@ function ExploreScreen() {
 export default ExploreScreen;
 
 const styles = StyleSheet.create({
-    user: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 5
-    },
-    card: {
-        borderWidth: 1,
-        borderColor: 'black',
-        margin: 10,
-        borderRadius: 10, 
-        padding: 10
-    },
-image: {
+  like: {
+    backgroundColor: "green",
+    borderRadius: 8,
+    padding: 6,
+  },
+  dislike: {
+    backgroundColor: "red",
+    borderRadius: 8,
+    padding: 6,
+  },
+  user: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  card: {
+    borderWidth: 1,
+    borderColor: "black",
+    margin: 10,
+    borderRadius: 10,
+    padding: 10,
+  },
+  image: {
     width: "100%",
     height: 400,
-    borderRadius: 10
-},
-avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-}
-})
+    borderRadius: 10,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: "black",
+  },
+});
