@@ -14,7 +14,7 @@ export default function ImagePickerExample({token}) {
     const body = new FormData();
     body.append("image", base64);
 
-    fetch(`https://api.imgbb.com/1/upload?expiration=600&key=${key}`, {
+    fetch(`https://api.imgbb.com/1/upload?key=${key}`, {
       body,
       headers: {
         "Content-Type": "multipart/form-data",

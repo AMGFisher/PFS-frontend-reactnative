@@ -13,8 +13,6 @@ import { useState, useEffect } from "react";
 import FriendProfileScreen from "./screens/FriendProfileScreen";
 import PostDetailScreen from "./screens/PostDetailScreen";
 import { Ionicons } from "@expo/vector-icons";
-import { DefaultTheme, DarkTheme } from "@react-navigation/native";
-import { useColorScheme } from "react-native";
 const url = "http://0a43-212-102-35-219.ngrok.io";
 import EditProfileScreen from "./screens/EditProfileScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -68,7 +66,11 @@ export default function App() {
 
   function ExploreStack() {
     return (
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: "orange" },
+        }}
+      >
         <Stack.Screen
           name="Explore All"
           component={ExploreScreen}
@@ -90,7 +92,11 @@ export default function App() {
 
   function FeedStack() {
     return (
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: "orange" },
+        }}
+      >
         <Stack.Screen
           name="Personal Feed"
           component={FeedScreen}
@@ -112,11 +118,34 @@ export default function App() {
 
   function ProfileStack() {
     return (
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          // headerShown: false,
+          headerStyle: { backgroundColor: "orange" },
+        }}
+      >
         <Stack.Screen
           name="Personal Profile"
           component={PersonalProfileScreen}
           initialParams={{ token: token, user: user }}
+          options={({ navigation }) => ({
+            headerLeft: () => (
+              <Button
+                onPress={() =>
+                  navigation.navigate("Edit Profile", { user: user })
+                }
+                title="Edit"
+              />
+            ),
+            headerRight: () => (
+              <Button onPress={() => handleLogout()} title="Logout" />
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="PostDetail"
+          component={PostDetailScreen}
+          initialParams={{ token: token }}
         />
         <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
       </Stack.Navigator>
@@ -138,6 +167,7 @@ export default function App() {
               name="Explore All"
               component={ExploreStack}
               options={{
+                headerShown: false,
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="globe" color={color} size={size} />
                 ),
@@ -147,6 +177,7 @@ export default function App() {
               name="Personal Feed"
               component={FeedStack}
               options={{
+                headerShown: false,
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="home" color={color} size={size} />
                 ),
@@ -164,29 +195,18 @@ export default function App() {
                 ),
               }}
             >
-            {() => <CreatePostScreen token={token} />}
+              {() => <CreatePostScreen token={token} />}
             </Tab.Screen>
-            
 
             <Tab.Screen
               name="Profile"
               component={ProfileStack}
-              options={({ navigation }) => ({
-                headerLeft: () => (
-                  <Button
-                    onPress={() =>
-                      navigation.navigate("Edit Profile", { user: user })
-                    }
-                    title="Edit"
-                  />
-                ),
-                headerRight: () => (
-                  <Button onPress={() => handleLogout()} title="Logout" />
-                ),
+              options={{
+                headerShown: false,
                 tabBarIcon: ({ color, size }) => (
                   <Ionicons name="person-circle" color={color} size={size} />
                 ),
-              })}
+              }}
             />
           </Tab.Navigator>
         ) : (

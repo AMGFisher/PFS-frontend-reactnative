@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,17 +13,27 @@ const url = "http://0a43-212-102-35-219.ngrok.io";
 
 function ExploreScreen({ route, navigation }) {
   const [posts, setPosts] = useState([]);
+  const [refreshing, setRefreshing] = useState(true);
   const token = route.params.token;
 
   useEffect(() => {
+    loadPosts();
+  }, []);
+
+
+  function loadPosts() {
     fetch(`${url}/posts`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((r) => r.json())
-      .then(setPosts);
-  }, []);
+      .then((res) => {
+        setRefreshing(false);
+        setPosts(res)
+      })
+  }
+
 
   function handleLike() {
     console.log("Like!");
@@ -33,10 +44,12 @@ function ExploreScreen({ route, navigation }) {
 
   return (
     <View>
-      <Text>Explore All Screen</Text>
       <FlatList
         keyExtractor={(item) => item.id}
         data={posts}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={loadPosts} />
+        }
         renderItem={(itemData) => {
           return (
             <View style={styles.card}>
@@ -121,9 +134,9 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
     borderColor: "black",
-    margin: 10,
+    margin: 5,
     borderRadius: 10,
-    padding: 10,
+    padding: 5,
   },
   image: {
     width: "100%",

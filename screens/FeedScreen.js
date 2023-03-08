@@ -5,30 +5,35 @@ import {
   Image,
   StyleSheet,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 const url = "http://0a43-212-102-35-219.ngrok.io";
 
-
-
 function FeedScreen({ route, navigation }) {
   const [posts, setPosts] = useState([]);
+  const [refreshing, setRefreshing] = useState(true);
   const token = route.params.token;
 
-  console.log(token);
-
   useEffect(() => {
+    loadPosts();
+  }, []);
+
+
+  function loadPosts() {
     fetch(`${url}/feed`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((r) => r.json())
-      .then(setPosts);
-  }, []);
+      .then((res) => {
+        setRefreshing(false);
+        setPosts(res)
+      })
+  }
 
-  console.log(posts);
 
   function handleLike() {
     console.log("Like!");
@@ -39,30 +44,38 @@ function FeedScreen({ route, navigation }) {
 
   return (
     <View>
-      <Text>Personal Feed Screen</Text>
       <FlatList
         keyExtractor={(item) => item.id}
         data={posts}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={loadPosts} />
+        }
         renderItem={(itemData) => {
           return (
             <View style={styles.card}>
-              <View style={styles.user}>
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate("FriendProfile", {
-                      user: itemData.item.user,
-                    })
-                  }
-                >
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("FriendProfile", {
+                    user: itemData.item.user,
+                  })
+                }
+              >
+                <View style={styles.user}>
                   <Image
                     source={{ uri: itemData.item.user.avatar }}
                     style={styles.avatar}
                   />
-                  <Text style={{ fontWeight: "bold" }}>
-                    @{itemData.item.user.handle}
-                  </Text>
-                </Pressable>
-              </View>
+                  <View style={{ flexDirection: "column" }}>
+                    <Text style={{ fontWeight: "bold" }}>
+                      @{itemData.item.user.handle}
+                    </Text>
+                    <Text>
+                      {itemData.item.user.first_name}{" "}
+                      {itemData.item.user.last_name}
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
 
               <Pressable onPress={() => navigation.navigate("PostDetail")}>
                 <Image
@@ -121,9 +134,9 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
     borderColor: "black",
-    margin: 10,
+    margin: 5,
     borderRadius: 10,
-    padding: 10,
+    padding: 5,
   },
   image: {
     width: "100%",
@@ -131,9 +144,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: "black",
   },
