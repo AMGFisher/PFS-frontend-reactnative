@@ -15,36 +15,75 @@ import PostDetailScreen from "./screens/PostDetailScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { useColorScheme } from "react-native";
-const url = "http://78bf-149-34-242-95.ngrok.io";
+const url = "http://0a43-212-102-35-219.ngrok.io";
 import EditProfileScreen from "./screens/EditProfileScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// import { LogBox } from 'react-native';
+// LogBox.ignoreAllLogs();//Ignore all log notifications
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    fetch(`${url}/me`).then((r) => {
-      if (r.ok) {
-        r.json().then((user) => setUser(user));
+    AsyncStorage.getItem("jwt").then((token) => {
+      if (typeof token !== "undefined" && token !== null && token.length > 1) {
+        fetch(`${url}/auto_login`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            console.log(res);
+            setUser(res.user);
+            setToken(res.token);
+          });
+      } else {
+        console.log("No token found, try logging in!");
       }
     });
   }, []);
 
   function handleLogout() {
-    fetch(`${url}/logout`, { method: "DELETE" }).then((r) => {
-      alert("Logged out successfully!");
+    AsyncStorage.setItem("jwt", "").then(() => {
       setUser(null);
+      setToken(null);
+      alert("Logged out successfully");
     });
   }
+
+  //   fetch(`${url}/logout`, { method: "DELETE" }).then((r) => {
+  //     alert("Logged out successfully!");
+  //     setUser(null);
+  //   });
+  // }
 
   function ExploreStack() {
     return (
       <Stack.Navigator>
-        <Stack.Screen name="Explore All" component={ExploreScreen} />
-        <Stack.Screen name="FriendProfile" component={FriendProfileScreen} />
-        <Stack.Screen name="PostDetail" component={PostDetailScreen} />
+        <Stack.Screen
+          name="Explore All"
+          component={ExploreScreen}
+          initialParams={{ token: token }}
+        />
+        <Stack.Screen
+          name="FriendProfile"
+          component={FriendProfileScreen}
+          initialParams={{ token: token }}
+        />
+        <Stack.Screen
+          name="PostDetail"
+          component={PostDetailScreen}
+          initialParams={{ token: token }}
+        />
       </Stack.Navigator>
     );
   }
@@ -52,9 +91,21 @@ export default function App() {
   function FeedStack() {
     return (
       <Stack.Navigator>
-        <Stack.Screen name="Personal Feed" component={FeedScreen} />
-        <Stack.Screen name="FriendProfile" component={FriendProfileScreen} />
-        <Stack.Screen name="PostDetail" component={PostDetailScreen} />
+        <Stack.Screen
+          name="Personal Feed"
+          component={FeedScreen}
+          initialParams={{ token: token }}
+        />
+        <Stack.Screen
+          name="FriendProfile"
+          component={FriendProfileScreen}
+          initialParams={{ token: token }}
+        />
+        <Stack.Screen
+          name="PostDetail"
+          component={PostDetailScreen}
+          initialParams={{ token: token }}
+        />
       </Stack.Navigator>
     );
   }
@@ -64,20 +115,18 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen
           name="Personal Profile"
-        >
-                      {() => <PersonalProfileScreen user={user} />}
-            </Stack.Screen>
+          component={PersonalProfileScreen}
+          initialParams={{ token: token, user: user }}
+        />
         <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
       </Stack.Navigator>
     );
   }
 
-  const scheme = useColorScheme();
-
   return (
     <>
       <StatusBar style="auto" />
-      <NavigationContainer theme={scheme === "dark" ? DarkTheme : DefaultTheme}>
+      <NavigationContainer>
         {user ? (
           <Tab.Navigator
             screenOptions={{
@@ -105,19 +154,31 @@ export default function App() {
             />
             <Tab.Screen
               name="Create Post"
-              component={CreatePostScreen}
               options={{
                 tabBarIcon: ({ color, size }) => (
-                  <Ionicons name="add-circle-outline" color={color} size={size} />
+                  <Ionicons
+                    name="add-circle-outline"
+                    color={color}
+                    size={size}
+                  />
                 ),
               }}
-            />
+            >
+            {() => <CreatePostScreen token={token} />}
+            </Tab.Screen>
+            
+
             <Tab.Screen
               name="Profile"
               component={ProfileStack}
               options={({ navigation }) => ({
                 headerLeft: () => (
-                  <Button onPress={() => navigation.navigate('Edit Profile', { user: user })} title="Edit" />
+                  <Button
+                    onPress={() =>
+                      navigation.navigate("Edit Profile", { user: user })
+                    }
+                    title="Edit"
+                  />
                 ),
                 headerRight: () => (
                   <Button onPress={() => handleLogout()} title="Logout" />
@@ -146,10 +207,10 @@ export default function App() {
                 ),
               })}
             >
-              {() => <LoginScreen setUser={setUser} />}
+              {() => <LoginScreen setUser={setUser} setToken={setToken} />}
             </Stack.Screen>
             <Stack.Screen name={"Signup"}>
-              {() => <SignupScreen setUser={setUser} />}
+              {() => <SignupScreen setUser={setUser} setToken={setToken} />}
             </Stack.Screen>
           </Stack.Navigator>
         )}

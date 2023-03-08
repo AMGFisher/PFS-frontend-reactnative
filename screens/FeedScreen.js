@@ -8,14 +8,22 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-const url = "http://78bf-149-34-242-95.ngrok.io";
+const url = "http://0a43-212-102-35-219.ngrok.io";
 
 
-function FeedScreen({ navigation }) {
+
+function FeedScreen({ route, navigation }) {
   const [posts, setPosts] = useState([]);
+  const token = route.params.token;
+
+  console.log(token);
 
   useEffect(() => {
-    fetch(`${url}/feed`)
+    fetch(`${url}/feed`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((r) => r.json())
       .then(setPosts);
   }, []);
@@ -39,21 +47,24 @@ function FeedScreen({ navigation }) {
           return (
             <View style={styles.card}>
               <View style={styles.user}>
-              <Pressable onPress={() => navigation.navigate('FriendProfile')}>
-
-                <Image
-                  source={{ uri: itemData.item.user.avatar }}
-                  style={styles.avatar}
-                />
-                <Text style={{ fontWeight: "bold" }}>
-                  @{itemData.item.user.handle}
-                </Text>
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate("FriendProfile", {
+                      user: itemData.item.user,
+                    })
+                  }
+                >
+                  <Image
+                    source={{ uri: itemData.item.user.avatar }}
+                    style={styles.avatar}
+                  />
+                  <Text style={{ fontWeight: "bold" }}>
+                    @{itemData.item.user.handle}
+                  </Text>
                 </Pressable>
-
               </View>
 
-              <Pressable onPress={() => navigation.navigate('PostDetail')}>
-
+              <Pressable onPress={() => navigation.navigate("PostDetail")}>
                 <Image
                   source={{ uri: itemData.item.image }}
                   style={styles.image}
@@ -62,8 +73,7 @@ function FeedScreen({ navigation }) {
                   {itemData.item.caption}
                 </Text>
                 <Text>{itemData.item.comments.length} comments</Text>
-                </Pressable>
-
+              </Pressable>
 
               <View
                 style={{ flexDirection: "row", justifyContent: "space-evenly" }}

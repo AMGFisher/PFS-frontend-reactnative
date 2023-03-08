@@ -7,7 +7,7 @@ import {
   Pressable,
 } from "react-native";
 import { useEffect, useState } from "react";
-const url = "http://78bf-149-34-242-95.ngrok.io";
+const url = "http://0a43-212-102-35-219.ngrok.io";
 
 function FriendProfileScreen({ route, navigation }) {
   navigation.setOptions({
@@ -15,11 +15,16 @@ function FriendProfileScreen({ route, navigation }) {
   });
 
   console.log(route.params.user);
+  const token = route.params.token
 
   const [user, setUser] = useState([]);
 
   useEffect(() => {
-    fetch(`${url}/users/${route.params.user.id}`)
+    fetch(`${url}/users/${route.params.user.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((r) => r.json())
       .then(setUser);
   }, []);

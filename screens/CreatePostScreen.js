@@ -1,12 +1,12 @@
 import { View, Text, Button } from "react-native";
 import ImagePickerExample from "../components/ImagePickerExample";
 
-function CreatePostScreen() {
-
+function CreatePostScreen({token}) {
+console.log(token)
 
   return (
     <>
-      <ImagePickerExample />
+      <ImagePickerExample token={token} />
     </>
   );
 }

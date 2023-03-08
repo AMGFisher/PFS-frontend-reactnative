@@ -7,48 +7,92 @@ import {
   Pressable,
 } from "react-native";
 import { useEffect, useState } from "react";
-const url = "http://78bf-149-34-242-95.ngrok.io";
+const url = "http://0a43-212-102-35-219.ngrok.io";
 
 
-function PersonalProfileScreen({ user }) {
-  const [posts, setPosts] = useState([]);
+function PersonalProfileScreen({ route, navigation }) {
+  const [user, setUser] = useState([]);
+  
+  console.log(route.params)
+
+  const token = route.params.token
 
   useEffect(() => {
-    fetch(`${url}/personal`)
+    fetch(`${url}/users/${route.params.user.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((r) => r.json())
-      .then(setPosts);
+      .then(setUser);
   }, []);
 
   return (
+
     <View>
-      <Text>Personal Profile Screen</Text>
-
-      <View style={styles.user}>
-        <Image source={{ uri: user.avatar }} style={styles.avatar} />
-        <View style={{ flexDirection: "column" }}>
-          <Text style={{ fontWeight: "bold" }}>@{user.handle}</Text>
-          <Text>
-            {user.first_name} {user.last_name}
-          </Text>
-        </View>
+    <View style={styles.user}>
+      <Image source={{ uri: user.avatar }} style={styles.avatar} />
+      <View style={{ flexDirection: "column" }}>
+        <Text style={{ fontWeight: "bold" }}>@{user.handle}</Text>
+        <Text>
+          {user.first_name} {user.last_name}
+        </Text>
       </View>
-
-      <FlatList
-        keyExtractor={(item) => item.id}
-        data={posts}
-        numColumns={3}
-        renderItem={(itemData) => {
-          return (
-            <View>
+    </View>
+    <View style={{alignItems: 'center'}}>
+    <FlatList
+      keyExtractor={(item) => item.id}
+      data={user.posts}
+      numColumns={3}
+      renderItem={(itemData) => {
+        return (
+          <View style={{margin: 1}}>
+            <Pressable
+              onPress={() =>
+                navigation.navigate("PostDetail", {
+                  post: itemData.item,
+                })
+              }
+            >
               <Image
                 source={{ uri: itemData.item.image }}
                 style={styles.image}
               />
-            </View>
-          );
-        }}
-      />
+            </Pressable>
+          </View>
+        );
+      }}
+    />
     </View>
+  </View>
+
+    // <View>
+    //   <View style={styles.user}>
+    //     <Image source={{ uri: user.avatar }} style={styles.avatar} />
+    //     <View style={{ flexDirection: "column" }}>
+    //       <Text style={{ fontWeight: "bold" }}>@{user.handle}</Text>
+    //       <Text>
+    //         {user.first_name} {user.last_name}
+    //       </Text>
+    //     </View>
+    //   </View>
+
+    //   <FlatList
+    //     keyExtractor={(item) => item.id}
+    //     data={posts}
+    //     numColumns={3}
+    //     renderItem={(itemData) => {
+    //       return (
+    //         <View>
+    //           <Image
+    //             source={{ uri: itemData.item.image }}
+    //             style={styles.image}
+    //           />
+    //         </View>
+    //       );
+    //     }}
+    //   />
+    // </View>
   );
 }
 

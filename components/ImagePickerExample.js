@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Button, Image, View, TextInput } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
-const url = "http://78bf-149-34-242-95.ngrok.io";
+const url = "http://0a43-212-102-35-219.ngrok.io";
 
-export default function ImagePickerExample() {
+export default function ImagePickerExample({token}) {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [base64, setBase64] = useState(null);
   const key = "e0894702a2151f4cf674e6686444438f";
+  console.log(token)
 
   function uploadImagePost() {
     const body = new FormData();
@@ -27,19 +27,20 @@ export default function ImagePickerExample() {
       .then((data) => {
         console.log("data from imagebb", data.data.display_url);
         setImage(data.data.display_url)
-        createPost()
+        createPost(data.data.display_url)
       });
   }
 
-  function createPost() {
+  function createPost(image_url) {
     console.log("hello world", image)
     fetch(`${url}/posts`, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        image: image,
+        image: image_url,
         caption: caption,
         likes: 0,
         dislikes: 0

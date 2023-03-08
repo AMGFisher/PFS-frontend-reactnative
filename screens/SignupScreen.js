@@ -1,9 +1,10 @@
 import { View, Text, TextInput, Button, Image } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-const url = "http://78bf-149-34-242-95.ngrok.io";
+const url = "http://0a43-212-102-35-219.ngrok.io";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-function SignupScreen({ setUser }) {
+function SignupScreen({ setUser, setToken }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
@@ -28,12 +29,16 @@ function SignupScreen({ setUser }) {
         handle,
         avatar: "https://i.ibb.co/fHHH095/12532-alfredhitchcock-2.jpg",
       }),
-    }).then((r) => {
-      if (r.ok) {
-        r.json().then((user) => setUser(user));
-      }
-    });
-  }
+    })
+    .then((r) => r.json())
+    .then((response) => {
+      AsyncStorage.setItem('jwt', response.jwt)
+      return response
+    }).then((response) => {
+      setToken(response.jwt)
+      setUser(response.user)
+    })
+}
 
   return (
     <View style={{ alignItems: "center" }}>

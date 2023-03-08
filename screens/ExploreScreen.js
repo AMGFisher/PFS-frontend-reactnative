@@ -8,13 +8,18 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-const url = "http://78bf-149-34-242-95.ngrok.io";
+const url = "http://0a43-212-102-35-219.ngrok.io";
 
-function ExploreScreen({ navigation }) {
+function ExploreScreen({ route, navigation }) {
   const [posts, setPosts] = useState([]);
+  const token = route.params.token;
 
   useEffect(() => {
-    fetch(`${url}/posts`)
+    fetch(`${url}/posts`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((r) => r.json())
       .then(setPosts);
   }, []);
@@ -47,14 +52,14 @@ function ExploreScreen({ navigation }) {
                     source={{ uri: itemData.item.user.avatar }}
                     style={styles.avatar}
                   />
-                  <View style={{flexDirection: "column"}}>
-                  <Text style={{ fontWeight: "bold" }}>
-                    @{itemData.item.user.handle}
-                  </Text>
-                  <Text>
-                    {itemData.item.user.first_name}{" "}
-                    {itemData.item.user.last_name}
-                  </Text>
+                  <View style={{ flexDirection: "column" }}>
+                    <Text style={{ fontWeight: "bold" }}>
+                      @{itemData.item.user.handle}
+                    </Text>
+                    <Text>
+                      {itemData.item.user.first_name}{" "}
+                      {itemData.item.user.last_name}
+                    </Text>
                   </View>
                 </View>
               </Pressable>
