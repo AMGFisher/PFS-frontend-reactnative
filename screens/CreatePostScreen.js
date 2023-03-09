@@ -6,7 +6,7 @@ import {
   useCameraPermissions,
   PermissionStatus,
 } from "expo-image-picker";
-const url = "http://0a43-212-102-35-219.ngrok.io";
+const url = "http://2a33-194-33-45-121.ngrok.io";
 import { Ionicons } from "@expo/vector-icons";
 
 

@@ -7,7 +7,7 @@ import {
   Pressable,
 } from "react-native";
 import { useEffect, useState } from "react";
-const url = "http://0a43-212-102-35-219.ngrok.io";
+const url = "http://2a33-194-33-45-121.ngrok.io";
 
 
 function PersonalProfileScreen({ route, navigation }) {

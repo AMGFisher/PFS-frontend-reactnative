@@ -1,7 +1,7 @@
 import { View, Text, TextInput, Image, StyleSheet } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-const url = "http://0a43-212-102-35-219.ngrok.io";
+const url = "http://2a33-194-33-45-121.ngrok.io";
 
 
 function EditProfileScreen({ route }) {

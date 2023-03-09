@@ -13,12 +13,12 @@ import { useState, useEffect } from "react";
 import FriendProfileScreen from "./screens/FriendProfileScreen";
 import PostDetailScreen from "./screens/PostDetailScreen";
 import { Ionicons } from "@expo/vector-icons";
-const url = "http://0a43-212-102-35-219.ngrok.io";
+const url = "http://2a33-194-33-45-121.ngrok.io";
 import EditProfileScreen from "./screens/EditProfileScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// import { LogBox } from 'react-native';
-// LogBox.ignoreAllLogs();//Ignore all log notifications
+import { LogBox } from 'react-native';
+LogBox.ignoreAllLogs();//Ignore all log notifications
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -84,7 +84,7 @@ export default function App() {
         <Stack.Screen
           name="PostDetail"
           component={PostDetailScreen}
-          initialParams={{ token: token }}
+          initialParams={{ token: token, user: user }}
         />
       </Stack.Navigator>
     );
